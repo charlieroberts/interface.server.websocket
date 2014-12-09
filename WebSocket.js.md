@@ -62,7 +62,7 @@ _ is our lo-dash reference; this object also relies on the node ws module: https
         client.on( 'message', function( msg ) {
           msg = JSON.parse( msg )
           msg.values.unshift( msg.key ) // switchboard.route accepts one array argument with path at beginning
-          var response = WS.app.switchboard.route.apply( WS.app.switchboard, msg.values )
+          var response = WS.app.switchboard.route.call( WS.app.switchboard, msg.values, null )
           if( response !== null ) {
             client.send( JSON.stringify({ 'key': msg.path, 'values':[ response ] }) )
           }
