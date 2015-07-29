@@ -51,9 +51,17 @@ WS = {
     client.on( 'message', function( msg ) {
       msg = JSON.parse( msg )
       msg.values.unshift( msg.key ) // switchboard.route accepts one array argument with path at beginning
-      var response = WS.app.switchboard.route.call( WS.app.switchboard, msg.values, null )
-      if( response !== null ) {
-        client.send( JSON.stringify({ 'key': msg.path, 'values':[ response ] }) )
+      var response = WS.app.switchboard.route.call( WS.app.switchboard, msg.values, null ),
+          stringified = null
+      
+      try {
+        stringified = JSON.stringify({ 'key': msg.key, 'values':[ response ] })
+      }catch (e) {
+        console.log( "Could not create response message for " + msg.key, "::", e )
+      }
+      
+      if( stringified !== null ) {
+        client.send( stringified )
       }
     })
     

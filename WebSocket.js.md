@@ -62,12 +62,16 @@ _ is our lo-dash reference; this object also relies on the node ws module: https
         client.on( 'message', function( msg ) {
           msg = JSON.parse( msg )
           msg.values.unshift( msg.key ) // switchboard.route accepts one array argument with path at beginning
-          var response = WS.app.switchboard.route.call( WS.app.switchboard, msg.values, null )
-          if( response !== null ) {
-            client.send( JSON.stringify({ 'key': msg.path, 'values':[ response ] }) )
+          var response = WS.app.switchboard.route.call( WS.app.switchboard, msg.values, null ),
+              stringified = null
+      
+          try {
+            stringified = JSON.stringify({ 'key': msg.key, 'values':[ response ] })
+          }catch (e) {
+            console.log( "Could not create response message for " + msg.key, "::", e )
           }
         })
-        
+
         client.on( 'close', function() {
           delete WS.clients[ client.ip ]
           WS.emit( 'WebSocket client closed', client.ip )
